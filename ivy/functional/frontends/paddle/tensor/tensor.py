@@ -273,6 +273,16 @@ class Tensor:
     def addmm(self, x, y, beta=1.0, alpha=1.0, name=None):
         return paddle_frontend.addmm(self, x, y, beta, alpha)
 
+    @with_supported_dtypes({"2.5.1 and below": ("float32", "float64")}, "paddle")
+    def flatten_(self, start_axis=0, stop_axis=-1, name=None):
+        if len(self.shape) == 0:
+            self.ivy_array = self.unsqueeze(axis=0).ivy_array
+            return self
+        self.ivy_array = ivy.flatten(
+            self.ivy_array, start_dim=start_axis, end_dim=stop_axis
+        ).ivy_array
+        return self
+
     @with_supported_dtypes(
         {"2.5.1 and below": ("float16", "float32", "float64", "int32", "int64")},
         "paddle",
